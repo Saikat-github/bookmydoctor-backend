@@ -46,7 +46,7 @@ const io = new Server(server, {
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, process.env.USER_URL],
+  origin: [process.env.FRONTEND_URL, process.env.USER_URL, process.env.ADMIN_URL],
   credentials: true
 }));
 app.use(helmet());
