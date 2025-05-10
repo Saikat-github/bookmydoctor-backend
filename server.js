@@ -24,13 +24,6 @@ import { Server } from 'socket.io';
 const app = express();
 const port = process.env.PORT || 4000;
 
-// Add CORS middleware for Express routes
-app.use(cors({
-  origin: [process.env.FRONTEND_URL, process.env.USER_URL, process.env.ADMIN_URL],
-  credentials: true,
-  methods: ["GET", "POST", "DELETE", "PUT", "PATCH"]
-}));
-
 // Socket.io configuration
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -47,7 +40,8 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cors({
   origin: [process.env.FRONTEND_URL, process.env.USER_URL, process.env.ADMIN_URL],
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH"]
 }));
 app.use(helmet());
 app.use(xss());
@@ -67,12 +61,13 @@ app.use(
       mongoUrl: process.env.MONGO_URI,
       ttl: 7 * 24 * 60 * 60
     }),
-    cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: false, // Important for local development
-      sameSite: 'lax' // More relaxed for local testing
-    },
+cookie: {
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production', // secure only in prod
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // allow cross-site in prod
+}
+,
     rolling: true
   })
 );
