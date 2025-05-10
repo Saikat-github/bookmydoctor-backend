@@ -35,6 +35,7 @@ const io = new Server(server, {
 });
 
 
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(express.json());
@@ -43,7 +44,10 @@ app.use(cors({
   credentials: true,
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH"]
 }));
-app.use(helmet());
+app.use(helmet({
+  // Allow sessions and cross-origin cookies to work properly
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 app.use(xss());
 app.use(mongoSanitize());
 
@@ -61,14 +65,15 @@ app.use(
       mongoUrl: process.env.MONGO_URI,
       ttl: 7 * 24 * 60 * 60
     }),
-cookie: {
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // secure only in prod
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // allow cross-site in prod
-}
-,
-    rolling: true
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true, // Always use secure cookies in production
+      sameSite: 'none', // Must be 'none' for cross-origin cookies to work
+      domain: process.env.COOKIE_DOMAIN || undefined // Optional: set specific cookie domain if needed
+    },
+    rolling: true,
+    proxy: true 
   })
 );
 
@@ -121,7 +126,7 @@ io.on('connection', (socket) => {
     socket.join(`doctor-${room.doctorId}+${room.date}`);
   });
 
-  socket.on('disconnect', () => {});
+  socket.on('disconnect', () => { });
 });
 
 // Make io available to our routes
