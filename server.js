@@ -34,8 +34,8 @@ const io = new Server(server, {
   }
 });
 
-
-app.set('trust proxy', 1);
+// CRITICAL: Set trust proxy for secure cookies to work properly with reverse proxies like Render
+// app.set('trust proxy', 1);
 
 // Middleware
 app.use(express.json());
@@ -55,7 +55,7 @@ app.use(mongoSanitize());
 
 
 
-// Session configuration
+// Session configuration for production (Won't work in development)
 app.use(
   session({
     secret: process.env.SESSION_SECRET, // Different from production
@@ -68,12 +68,11 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: true, // Always use secure cookies in production
-      sameSite: 'none', // Must be 'none' for cross-origin cookies to work
-      domain: process.env.COOKIE_DOMAIN || undefined // Optional: set specific cookie domain if needed
+      secure: false, // Always use secure cookies in production
+      sameSite: 'lax', // Must be 'none' for cross-origin cookies to work
     },
     rolling: true,
-    proxy: true 
+    // proxy: true 
   })
 );
 

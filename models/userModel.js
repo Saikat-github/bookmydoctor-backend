@@ -80,11 +80,11 @@ userSchema.index({ doctorId: 1, appointmentDate: 1 });
 userSchema.index({ phoneNumber: 1, appointmentDate: 1 });
 userSchema.index({ email: 1, appointmentDate: 1 });
 
-// This patient will be automatically deleted 60 days later
+// This patient will be automatically deleted 30 days later
 userSchema.index(
     { appointmentDate: 1 },
     {
-        expireAfterSeconds: 60 * 24 * 60 * 60,  // 60 days
+        expireAfterSeconds: 30 * 24 * 60 * 60,  // 30 days
         name: 'appointment_cleanup'
     }
 );
