@@ -35,7 +35,7 @@ const io = new Server(server, {
 });
 
 // CRITICAL: Set trust proxy for secure cookies to work properly with reverse proxies like Render
-// app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(express.json());
@@ -68,11 +68,11 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false, // Always use secure cookies in production
-      sameSite: 'lax', // Must be 'none' for cross-origin cookies to work
+      secure: true, // Always use secure cookies in production
+      sameSite: 'none', // Must be 'none' for cross-origin cookies to work
     },
     rolling: true,
-    // proxy: true 
+    proxy: true 
   })
 );
 
