@@ -70,8 +70,8 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: process.emitWarning.NODE_ENV === "production", // Always use secure cookies in production
-      sameSite: process.emitWarning.NODE_ENV === "production" ? "none" : "lax", // Must be 'none' for cross-origin cookies to work
+      secure: process.env.NODE_ENV === "production", // Always use secure cookies in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Must be 'none' for cross-origin cookies to work
     },
     rolling: true,
     proxy: true 
